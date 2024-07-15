@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const express = require('express');
+const { log } = require('node:console');
 const app = express();
 const port = 3000;
 
@@ -18,7 +19,7 @@ function readTasksFromFile() {
     }
   }
 
-  const tasks = readTasksFromFile();
+  const tasksArray = readTasksFromFile().tasks;
 //   console.log('Tasks read from file:', tasks);
 
 // --------------Routes--------------
@@ -27,7 +28,27 @@ function readTasksFromFile() {
 app.get('/tasks', (req, res) => {
   try {
     console.log(`--GET /tasks endpoint called`);
-    res.json(tasks);
+    res.json(tasksArray);
+  } catch (error) {
+    console.error('Error handling request:', error.message);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// GET /tasks/:id: Retrieve a single task by its ID
+app.get('/tasks/:id', (req, res) => {
+  try {
+    console.log(`--GET /tasks/:id endpoint called`);
+    const taskId = parseInt(req.params.id); // Convert the ID parameter to an integer
+    const task = tasksArray.find((t) => t.id === taskId);
+
+    if (!task) {
+      // Task with the specified ID not found
+      return res.status(404).json({ error: 'Task not found.' });
+    }
+
+    // Task found
+    res.json(task);
   } catch (error) {
     console.error('Error handling request:', error.message);
     res.status(500).json({ error: 'Internal server error.' });
