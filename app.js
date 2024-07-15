@@ -21,6 +21,18 @@ function readTasksFromFile() {
   const tasks = readTasksFromFile();
 //   console.log('Tasks read from file:', tasks);
 
+// --------------Routes--------------
+
+// GET /tasks: Retrieve all tasks
+app.get('/tasks', (req, res) => {
+  try {
+    console.log(`--GET /tasks endpoint called`);
+    res.json(tasks);
+  } catch (error) {
+    console.error('Error handling request:', error.message);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
 
 app.listen(port, (err) => {
     if (err) {
