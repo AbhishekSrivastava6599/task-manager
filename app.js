@@ -39,7 +39,7 @@ app.get('/tasks', (req, res) => {
 app.get('/tasks/:id', (req, res) => {
   try {
     console.log(`--GET /tasks/:id endpoint called`);
-    const taskId = parseInt(req.params.id); // Convert the ID parameter to an integer
+    const taskId = parseInt(req.params.id); // Convert the ID parameter to an integer from string
     const task = tasksArray.find((t) => t.id === taskId);
 
     if (!task) {
@@ -79,6 +79,33 @@ app.post('/tasks', (req, res) => {
     tasksArray.push(newTask);
     // console.log(tasksArray)
     res.status(201).json(newTask);
+  } catch (error) {
+    console.error('Error handling request:', error.message);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// PUT /tasks/:id: Update an existing task by its ID
+app.put('/tasks/:id', (req, res) => {
+  try {
+    console.log(`--PUT /tasks/:id endpoint called`);
+    const taskId = parseInt(req.params.id);
+    const { title, description, completed } = req.body;
+
+    // Find the task with the specified ID from request body
+    const taskToUpdate = tasksArray.find((task) => task.id === taskId);
+
+    if (!taskToUpdate) {
+      return res.status(404).json({ error: 'Task not found.' });
+    }
+
+    // Update task properties
+    if (title) taskToUpdate.title = title;
+    if (description) taskToUpdate.description = description;
+    if (completed !== undefined) taskToUpdate.completed = completed;
+
+    console.log(tasksArray)
+    res.json(taskToUpdate);
   } catch (error) {
     console.error('Error handling request:', error.message);
     res.status(500).json({ error: 'Internal server error.' });
