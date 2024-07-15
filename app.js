@@ -104,8 +104,30 @@ app.put('/tasks/:id', (req, res) => {
     if (description) taskToUpdate.description = description;
     if (completed !== undefined) taskToUpdate.completed = completed;
 
-    console.log(tasksArray)
+    // console.log(tasksArray)
     res.json(taskToUpdate);
+  } catch (error) {
+    console.error('Error handling request:', error.message);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// DELETE /tasks/:id: Delete a task by its ID
+app.delete('/tasks/:id', (req, res) => {
+  try {
+    console.log(`--DELETE /tasks/:id endpoint called`);
+    const taskId = parseInt(req.params.id);
+    const taskIndex = tasksArray.findIndex((task) => task.id === taskId);
+
+    if (taskIndex === -1) {
+      return res.status(404).json({ error: 'Task not found.' });
+    }
+
+    // Remove the task from the tasks array
+    const deletedTask = tasksArray.splice(taskIndex, 1)[0];
+
+    // console.log(tasksArray)
+    res.json(deletedTask);
   } catch (error) {
     console.error('Error handling request:', error.message);
     res.status(500).json({ error: 'Internal server error.' });
